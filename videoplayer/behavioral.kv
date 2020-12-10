@@ -1,0 +1,83 @@
+#:kivy 1.11.1
+
+<VideoWidget>:
+    orientation: 'vertical'
+    spacing: 10
+    onset_color: 0, 1, 0, 0.5
+    canvas:
+        Color:
+            rgba: self.onset_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 10
+        height: 480
+        size_hint_y: None
+
+        Video:
+            id: video
+            state: 'play'
+            options: {'eos': 'loop'}
+            allow_stretch: False
+            source: root.video_path
+            width: 640
+            size_hint_x: None
+            on_position: root.show_onset()
+            spacing: 10
+        BoxLayout:
+            orientation: 'vertical'
+            TextInput:
+                id: textinput
+                text: root.user
+                font_size: 20
+                size_hint_y: None
+                height: 35
+            Button:
+                text: 'Set user'
+                on_press: root.set_user()
+                height: 35
+                size_hint_y: None
+            Button:
+                text: 'Extract'
+                on_release: root.extract_segments()
+                height: 35
+                size_hint_y: None
+            Button:
+                text: 'Next'
+                on_release: root.play_next_video()
+                height: 100
+                size_hint_y: None
+    BoxLayout:
+        orientation: 'horizontal'
+        Label:
+            text: ' 0: invalid \n 1: no response \n 2: orienting \n 3: deceleration \n 4: acceleration'
+            font_size: 12
+
+        Button:
+            text: 'Invalid'
+            on_release: root.set_classification('invalid')
+            size_hint: (0.5, 1)
+            background_color: (1, 0, 0, 1)
+            state: root.invalid_state
+        Button:
+            text: 'No response'
+            on_release: root.set_classification('no response')
+            size_hint: (0.5, 1)
+            state: root.no_response_state
+        Button:
+            text: 'Orienting'
+            on_release: root.set_classification('orienting')
+            size_hint: (0.5, 1)
+            state: root.orienting_state
+        Button:
+            text: 'Deceleration'
+            on_release: root.set_classification('deceleration')
+            size_hint: (0.5, 1)
+            state: root.deceleration_state
+        Button:
+            text: 'Acceleration'
+            on_release: root.set_classification('acceleration')
+            size_hint: (0.5, 1)
+            state: root.acceleration_state

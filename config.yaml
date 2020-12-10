@@ -1,0 +1,10 @@
+
+project_path: ...
+db_path: Y:\Data\Ania\opto-fUSi\theOnlyTrueDB.csv
+db_type: DatasetOpto
+data_path: Y:\Data
+
+fit_bodyparts: ['ear_left', 'ear_right', 'nose', 'tail_start']
+impose_bodyparts: ['ear_left', 'ear_right', 'nose', 'tail_end', 'tail_start']
+
+pps_reference: -1
