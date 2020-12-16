@@ -4,10 +4,10 @@ from tqdm import tqdm
 from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
 from sklearn.cluster import AgglomerativeClustering
 
-def run_analysis_kmeans(matrix, trial_mouselines, silhouette=True):
+def run_analysis_kmeans(matrix, trial_mouselines, n_init=200):
     results = {}
     for k in tqdm(range(2, 15)):
-        kmeans = KMeans(n_clusters=k, init='k-means++', max_iter=100)
+        kmeans = KMeans(n_clusters=k, init='k-means++', max_iter=100, n_init=n_init)
         kmeans.fit(matrix)
         labels = kmeans.predict(matrix)
         k_results = calc_criteria_ground_truth(labels, trial_mouselines)
@@ -23,11 +23,11 @@ def run_analysis_kmeans(matrix, trial_mouselines, silhouette=True):
 
     return results
 
-def run_analysis_gaussian_mixture(matrix, trial_mouselines):
+def run_analysis_gaussian_mixture(matrix, trial_mouselines, n_init=200):
     results = {}
 
     for k in tqdm(range(2, 15)):
-        mixt = GaussianMixture(n_components=k, n_init=50)
+        mixt = GaussianMixture(n_components=k, n_init=n_init)
         mixt.fit(matrix)
 
         labels = mixt.predict(matrix)
@@ -66,13 +66,13 @@ def run_analysis_agglomerative(matrix, trial_mouselines):
 
     return results
 
-def run_kmeans(matrix, n_clusters=5):
-    kmeans = KMeans(n_clusters=n_clusters, init='k-means++', max_iter=10000)
+def run_kmeans(matrix, n_clusters=5, n_init=1000):
+    kmeans = KMeans(n_clusters=n_clusters, init='k-means++', max_iter=1000, n_init=n_init)
     kmeans.fit(matrix)
     return kmeans
 
-def run_gaussian_mixture(matrix, n_components=5):
-    mixt = GaussianMixture(n_components=n_components, n_init=500)
+def run_gaussian_mixture(matrix, n_components=5, n_init=1000):
+    mixt = GaussianMixture(n_components=n_components, n_init=n_init)
     mixt.fit(matrix)
     return mixt
 
