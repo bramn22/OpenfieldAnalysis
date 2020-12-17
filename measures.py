@@ -79,6 +79,8 @@ def mov_freeze(df, bodyparts):
 def mov_rotation(df):
     """ Absolute difference between subsequent rotation angles (TODO: use rotation matrix like in the paper?) """
     diff = df['R'].diff()
+    diff[diff > np.pi] = -2*np.pi + diff[diff > np.pi]
+    diff[diff < -np.pi] = 2*np.pi + diff[diff < -np.pi]
     df['measures', 'mov_rotation'] = np.abs(diff)
     return df
 
@@ -86,6 +88,8 @@ def mov_rotation(df):
 def mov_rotation_dir(df):
     """ Absolute difference between subsequent rotation angles (TODO: use rotation matrix like in the paper?) """
     diff = df['R'].diff()
+    diff[diff > np.pi] = -2 * np.pi + diff[diff > np.pi]
+    diff[diff < -np.pi] = 2 * np.pi + diff[diff < -np.pi]
     df['measures', 'mov_rotation_D'] = diff
     return df
 
@@ -214,9 +218,11 @@ def normalize_scaling(df, n=100):
         print(col)
         df = df.sort_values(by=[('measures', col)], axis=0)
         print(df[('measures', col)].iloc[:n])
-        min_v = df[('measures', col)].iloc[:n].mean()
-        max_v = df[('measures', col)].iloc[-n:].mean()
+        min_v = df[('measures', col)].dropna().iloc[:n].mean()
+        max_v = df[('measures', col)].dropna().iloc[-n:].mean()
         print('min_v', min_v)
         print('max_v', max_v)
-        df[('measures', col)] = np.clip((df[('measures', col)] - min_v) / abs(max_v), 0, 1)
+        df[('measures', col)] = np.clip((df[('measures', col)] - min_v) / (max_v - min_v), 0, 1)
+        print(np.min(df[('measures', col)]), np.max(df[('measures', col)]))
+
     return df.sort_index()
