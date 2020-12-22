@@ -70,7 +70,7 @@ def run_analysis_agglomerative(matrix, trial_mouselines):
 
     return results
 
-def run_analysis_kmedoids(matrix, trial_mouselines, k_range=None, init='random', n_init=100, metric='euclidean', max_iter=300):
+def run_analysis_kmedoids(matrix, trial_mouselines, k_range=None, init='random', n_init=100, metric='euclidean', max_iter=300, method='alternate'):
     results = {}
     if None:
         k_range = range(2, 15)
@@ -78,7 +78,7 @@ def run_analysis_kmedoids(matrix, trial_mouselines, k_range=None, init='random',
         k_results = None
         min_inertia = float('inf')
         for i in range(n_init):
-            kmedoids = KMedoids(n_clusters=k, init=init, metric=metric, max_iter=max_iter)
+            kmedoids = KMedoids(n_clusters=k, init=init, metric=metric, max_iter=max_iter, method=method)
             kmedoids.fit(matrix)
             if kmedoids.inertia_ < min_inertia:
                 min_inertia = kmedoids.inertia_
@@ -101,11 +101,11 @@ def run_kmeans(matrix, n_clusters=5, n_init=1000, max_iter=1000, init='random'):
     kmeans.fit(matrix)
     return kmeans
 
-def run_kmedoids(matrix, n_clusters=5, n_init=1000, metric='euclidean', max_iter=1000, init='random'):
+def run_kmedoids(matrix, n_clusters=5, n_init=1000, metric='euclidean', max_iter=1000, init='random', method='alternate'):
     best_kmedoids = None
     min_inertia = float('inf')
     for i in range(n_init):
-        kmedoids = KMedoids(n_clusters=n_clusters, init=init, max_iter=max_iter, metric=metric)
+        kmedoids = KMedoids(n_clusters=n_clusters, init=init, max_iter=max_iter, metric=metric, method=method)
         kmedoids.fit(matrix)
         if kmedoids.inertia_ < min_inertia:
             min_inertia = kmedoids.inertia_
