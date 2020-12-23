@@ -7,11 +7,13 @@ from sklearn_extra.cluster import KMedoids
 
 def run_analysis_kmeans(matrix, trial_mouselines, k_range=None, n_init=200, max_iter=500, init='random'):
     results = {}
+    algos = []
     if None:
         k_range = range(2, 15)
     for k in tqdm(k_range):
         kmeans = KMeans(n_clusters=k, init=init, n_init=n_init, max_iter=max_iter)
         kmeans.fit(matrix)
+        algos.append(kmeans)
         labels = kmeans.predict(matrix)
         k_results = calc_criteria_ground_truth(labels, trial_mouselines)
         k_results['ssq'] = kmeans.inertia_
@@ -24,15 +26,18 @@ def run_analysis_kmeans(matrix, trial_mouselines, k_range=None, n_init=200, max_
             for crit, res in k_results.items():
                 results[crit].append(res)
 
-    return results
+    return results, algos
 
 def run_analysis_gaussian_mixture(matrix, trial_mouselines, n_init=200, k_range=None, max_iter=500, init='random'):
     results = {}
+    algos = []
+
     if None:
         k_range = range(2, 15)
     for k in tqdm(k_range):
         mixt = GaussianMixture(n_components=k, n_init=n_init, max_iter=max_iter, init_params=init)
         mixt.fit(matrix)
+        algos.append(mixt)
 
         labels = mixt.predict(matrix)
         k_results = calc_criteria_ground_truth(labels, trial_mouselines)
@@ -48,7 +53,7 @@ def run_analysis_gaussian_mixture(matrix, trial_mouselines, n_init=200, k_range=
             for crit, res in k_results.items():
                 results[crit].append(res)
 
-    return results
+    return results, algos
 
 def run_analysis_agglomerative(matrix, trial_mouselines):
     results = {}
@@ -72,21 +77,25 @@ def run_analysis_agglomerative(matrix, trial_mouselines):
 
 def run_analysis_kmedoids(matrix, trial_mouselines, k_range=None, init='random', n_init=100, metric='euclidean', max_iter=300):
     results = {}
+    algos = []
     if None:
         k_range = range(2, 15)
     for k in tqdm(k_range):
         k_results = None
         min_inertia = float('inf')
+        min_algo = None
         for i in range(n_init):
             kmedoids = KMedoids(n_clusters=k, init=init, metric=metric, max_iter=max_iter)
             kmedoids.fit(matrix)
             if kmedoids.inertia_ < min_inertia:
+                min_algo = kmedoids
                 min_inertia = kmedoids.inertia_
                 labels = kmedoids.predict(matrix)
                 k_results = calc_criteria_ground_truth(labels, trial_mouselines)
                 k_results['ssq'] = kmedoids.inertia_
                 k_results['silhouette'] = silhouette_analysis(matrix, labels)
                 k_results['davies_bouldin'] = davies_bouldin(matrix, labels)
+        algos.append(min_algo)
         if results == {}:
             for crit, res in k_results.items():
                 results[crit] = [res]
@@ -94,7 +103,7 @@ def run_analysis_kmedoids(matrix, trial_mouselines, k_range=None, init='random',
             for crit, res in k_results.items():
                 results[crit].append(res)
 
-    return results
+    return results, algos
 
 def run_kmeans(matrix, n_clusters=5, n_init=1000, max_iter=1000, init='random'):
     kmeans = KMeans(n_clusters=n_clusters, init=init, max_iter=max_iter, n_init=n_init)
